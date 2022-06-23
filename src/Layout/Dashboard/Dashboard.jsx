@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState, } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -18,6 +18,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -89,6 +91,25 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const Dashboard = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [storeData, setStoreData] = useState(null);
+
+  const getAnswer = async () => {
+    const data = await axios({
+      method: 'get',
+      url: 'https://store.155.248.201.13.nip.io/store/stocklevel',
+      headers: { 
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        'Authorization': 'Basic amFjazpwYXNzd29yZA==',
+      }
+    });
+    console.log(data)
+    setStoreData(data);
+  };
+
+  useEffect(() => {
+    getAnswer();
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -206,6 +227,13 @@ const Dashboard = () => {
           eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
           posuere sollicitudin aliquam ultrices sagittis orci a.
         </Typography>
+        {
+          storeData?
+          <Typography paragraph>
+            {storeData}
+          </Typography>
+          : null
+        }
       </Box>
     </Box>
   );
